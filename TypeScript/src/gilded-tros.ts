@@ -1,63 +1,66 @@
-import {Item} from './item';
+import { Item } from './item';
 
 export class GildedTros {
+    constructor(public items: Array<Item>) {}
 
-    constructor(public items: Array<Item>) {
-
+    private increaseQuality(item: Item): void {
+        if (item.quality < 50) {
+            item.quality++;
+        }
     }
 
-    public updateQuality(): void {
-        for (let i = 0; i < this.items.length; i++) {
-            if (this.items[i].name != 'Good Wine' && this.items[i].name != 'Backstage passes for Re:Factor'
-                && this.items[i].name != 'Backstage passes for HAXX') {
-                if (this.items[i].quality > 0) {
-                    if (this.items[i].name != 'B-DAWG Keychain') {
-                        this.items[i].quality = this.items[i].quality - 1;
-                    }
+    private decreaseQuality(item: Item): void {
+        if (item.quality > 0) {
+            item.quality--;
+        }
+    }
+
+    private isSpecialItem(item: Item): boolean {
+        const specialItems = ['Good Wine', 'Backstage passes for Re:Factor', 'Backstage passes for HAXX', 'B-DAWG Keychain'];
+        return specialItems.includes(item.name);
+    }
+
+    private updateItem(item: Item): void {
+        if (!this.isSpecialItem(item)) {
+            this.decreaseQuality(item);
+        } else {
+            this.increaseQuality(item);
+
+            if (item.name === 'Backstage passes for Re:Factor') {
+                if (item.sellIn < 11) {
+                    this.increaseQuality(item);
                 }
+
+                if (item.sellIn < 6) {
+                    this.increaseQuality(item);
+                }
+            }
+        }
+
+        if (item.name !== 'B-DAWG Keychain') {
+            item.sellIn--;
+        }
+
+        if (item.sellIn < 0) {
+            if (item.name === 'Good Wine') {
+                this.increaseQuality(item);
+            } else if (item.name === 'Backstage passes for Re:Factor' || item.name === 'Backstage passes for HAXX') {
+                item.quality = 0;
             } else {
-                if (this.items[i].quality < 50) {
-                    this.items[i].quality = this.items[i].quality + 1;
-
-                    if (this.items[i].name == 'Backstage passes for Re:Factor') {
-                        if (this.items[i].sellIn < 11) {
-                            if (this.items[i].quality < 50) {
-                                this.items[i].quality = this.items[i].quality + 1;
-                            }
-                        }
-
-                        if (this.items[i].sellIn < 6) {
-                            if (this.items[i].quality < 50) {
-                                this.items[i].quality = this.items[i].quality + 1;
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (this.items[i].name != 'B-DAWG Keychain') {
-                this.items[i].sellIn = this.items[i].sellIn - 1;
-            }
-
-            if (this.items[i].sellIn < 0) {
-                if (this.items[i].name != 'Good Wine') {
-                    if (this.items[i].name != 'Backstage passes for Re:Factor' || this.items[i].name != 'Backstage passes for HAXX') {
-                        if (this.items[i].quality > 0) {
-                            if (this.items[i].name != 'B-DAWG Keychain') {
-                                this.items[i].quality = this.items[i].quality - 1;
-                            }
-                        }
-                    } else {
-                        this.items[i].quality = this.items[i].quality - this.items[i].quality;
-                    }
-                } else {
-                    if (this.items[i].quality < 50) {
-                        this.items[i].quality = this.items[i].quality + 1;
-                    }
-                }
+                this.decreaseQuality(item);
             }
         }
     }
 
-}
+    public updateQuality(): void {
+        for (const item of this.items) {
+            this.updateItem(item);
+        }
+    }
 
+    public printInventory(): void {
+        this.items.map((item) => item.toString()).forEach((item) => console.log(item));
+
+        console.log();
+    }
+}
