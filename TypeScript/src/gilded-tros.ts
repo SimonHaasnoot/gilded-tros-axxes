@@ -1,16 +1,16 @@
 import { Item } from './item';
 
-enum SpecialItem {
+export enum SpecialItem {
     GoodWine = 'Good Wine',
     BackstagePassesReFactor = 'Backstage passes for Re:Factor',
     BackstagePassesHAXX = 'Backstage passes for HAXX',
 }
 
-enum LegendaryItem {
+export enum LegendaryItem {
     BDAWGKeychain = 'B-DAWG Keychain',
 }
 
-enum SmellyItem {
+export enum SmellyItem {
     DuplicateCode = 'Duplicate Code',
     LongMethods = 'Long Methods',
     UglyVariableNames = 'Ugly Variable Names',
@@ -45,6 +45,8 @@ export class GildedTros {
 
         if (item.quality < 0) {
             item.quality = 0;
+        } else if (item.quality > 50) {
+            item.quality = 50;
         }
     }
 
